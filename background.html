@@ -1,0 +1,26 @@
+<html>
+<head>
+<script>
+    var lastModifieds = {};
+    
+    chrome.extension.onRequest.addListener(
+        function(request, sender) {
+            if(request.msg == "lastModified") {
+                lastModifieds[sender.tab.id] = request.lastModified;
+                chrome.pageAction.setTitle({
+                    tabId: sender.tab.id,
+                    title: "Last modified: " + request.lastModified
+                });
+                chrome.pageAction.show(sender.tab.id);
+            }
+        }
+    );
+    
+    chrome.tabs.onRemoved.addListener(
+        function(tabId) {
+            delete lastModifieds[tabId];
+        }
+    );
+</script>
+</head>
+</html>

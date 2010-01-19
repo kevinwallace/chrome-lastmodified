@@ -1,0 +1,32 @@
+{
+    "name": "lastModified",
+    "version": "1.0.2",
+    "description": "Displays the current page's last modified time, if it is available.",
+    "icons": {
+        "32": "clock-32px.png",
+        "48": "clock-48px.png",
+        "128": "clock-128px.png"
+    },
+    "page_action": {
+        "default_icon": "clock-15px.png",
+        "default_title": "Last modified",
+        "popup": "popup.html"
+    },
+    "background_page": "background.html",
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "permissions": [
+        "tabs",
+        "http://*/*",
+        "https://*/*"
+    ]
+}
