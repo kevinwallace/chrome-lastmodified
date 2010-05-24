@@ -1,15 +1,58 @@
 <html>
 <head>
 <script>
+    var units = [
+        {unit: ["year",   "years"],      value: 1000 * 60 * 60 * 24 * 365   },
+        {unit: ["month",  "months"],     value: 1000 * 60 * 60 * 24 * 365/12},
+        {unit: ["day",    "days"],       value: 1000 * 60 * 60 * 24         },
+        {unit: ["hour",   "hours"],      value: 1000 * 60 * 60              },
+        {unit: ["minute", "minutes"],    value: 1000 * 60                   },
+        {unit: ["second", "seconds"],    value: 1000                        },
+    ];
+    
+    function timeDiff(start, end, numUnits) {
+        if(numUnits == undefined) {
+            numUnits = 2;
+        }
+        
+        var diff = end - start;
+        var result = [];
+        
+        for(var i = 0; i < units.length && result.length < numUnits; i++) {
+            var unit = units[i];
+            if(diff >= unit.value) {
+                var value = parseInt(diff / unit.value);
+                var label = unit.unit[value == 1 ? 0 : 1];
+                diff -= value * unit.value;
+                result.push(value + " " + label);
+            }
+        }
+        
+        if(result) {
+            return result.join(", ") + " ago";
+        } else if(diff < 0) {
+            return "in the future";
+        } else {
+            return "just now";
+        }
+    }
+    
     function main() {
         chrome.tabs.getSelected(null, function(tab) {
-            var lastModified = chrome.extension.getBackgroundPage().lastModifieds[tab.id];
-            document.getElementById("lastModified").textContent = new Date(lastModified).toLocaleString();
+            var lastModified = new Date(chrome.extension.getBackgroundPage().lastModifieds[tab.id]);
+            document.getElementById("lastModified").textContent = lastModified.toLocaleString();
+            document.getElementById("timeDiff").textContent = timeDiff(lastModified, new Date());
         });
     }
 </script>
+<style type="text/css">
+    pre {
+        text-align: right;
+    }
+</style>
 </head>
 <body onload="javascript:main()">
-    <pre><strong>Last modified:</strong> <span id="lastModified">Wed Dec 31 1969 16:00:00 GMT-0800 (PST)</span></pre>
+    <pre><strong>Last modified:</strong> <span id="lastModified">Wed Dec 31 1969 16:00:00 GMT-0800 (PST)</span>
+    (<span id="timeDiff">just now</span>)</pre>
 </body>
 </html>
